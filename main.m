@@ -37,4 +37,4 @@ P = lyap(Aref',Q);
 
 x0 = [300;v0;deg2rad(5)];
 
-sim('example_9_3')
+sim('EDLSim')
