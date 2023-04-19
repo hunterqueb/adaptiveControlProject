@@ -1,13 +1,14 @@
 
-clear;
+clear; close all
 
 %tSim = 550;
-tSim = 10;
+tSim = 100;
 %use neural network to figure out relationship between mach number and
 %Cl,Cd?
 % x0 = load('scaled.mat','x0');
 % params = load('scaled.mat','params');
 %%-------------------------------Parameters------------------------------%%
+% taken from chapter 12 from hicks atmospheric reentry
 beta = 0.14;            %inverse scale height [km^-1] (page 381)
 r_e = 6378.137;         %earth radius [km] (page 381)
 g_s = 9.81;             %acceleration of gravity at earth surface [m/s^2]
@@ -21,7 +22,6 @@ rho_s = 1.225;          %atmospheric density at earth surface [kg/m^3] (page 381
 r0 = 6498.27;                   %entry radius [km]
 v0 = 11.06715;                  %entry velocity [km/s] (pg 377)
 gamma0 = deg2rad(-6.6198381);   %entry flight path angle
-x0 = [r0;v0;gamma0];            %initial conditions
 
 %%------------------------------Conversions------------------------------%%
 beta = beta/1000;   %[m^-1]
@@ -39,13 +39,14 @@ v0 = v0*1000;       %[m/s]
 %D = 0.5*(rho*Cd*S*V^2);            %drag force equation
 
 %%----------------------------System Dynamics----------------------------%%
-x0 = load('scaled.mat','x0');
-params = load('scaled.mat','params');
-x0 = struct2array(x0);
-params = struct2array(params);
-m = params(1); g_s = params(2); S = params(3); beta = params(4); rho_s = params(5);
+% x0 = load('scaled.mat','x0');
+% params = load('scaled.mat','params');
+% x0 = struct2array(x0);
+% params = struct2array(params);
+% m = params(1); g_s = params(2); S = params(3); beta = params(4); rho_s = params(5);
 rho = rho_s;
 g = g_s;
+
 A = [0 0 v0;
      0 -rho*Cd*S/(2*m) -g;
      0 rho*Cl*S/(2*m) 0];
@@ -59,17 +60,38 @@ K = lqr(A,B,Q,R);
 
 %%----------------------------Reference Model----------------------------%%
 Aref =  A-B*K;
-Bref = [-1;0;0];
+Bref = [0;0;1];
 
 %%--------------------------Adaptive Parameters--------------------------%%
 Gama = 1;
 Theta = [0 0 1];
 
-Gamax = 100*eye(3);
-Gamar = 100;
-Gamat = 100*eye(3);
-Qref = diag([1 1 1]);
+Gamax = 10*eye(3);
+Gamar = 10;
+Gamat = 1*eye(3);
+Qref = diag([1 0 0]);
 
-P = lyap(Aref',Q);
+P = lyap(Aref',Qref);
 
-sim('EDLSim')
+%%----------------------------System Conditions----------------------------%%
+x0 = [r0;v0;gamma0];            %initial conditions
+r_des = 10 * 1000; % 10 km above the surface
+
+
+
+%%----------------------------Simulation----------------------------%%
+sim('EDLSim');
+
+
+%%----------------------------Plotting----------------------------%%
+
+figure
+plot(radiusTracking(:,1),(radiusTracking(:,2:end)-r_e)/1000)
+grid on
+legend('Signal','Plant','Reference Model')
+xlabel('Seconds')
+ylabel('Altitude (m)')
+
+figure
+plot(u.time,squeeze(u.signals.values))
+grid on
