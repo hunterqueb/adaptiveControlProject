@@ -22,7 +22,10 @@ rho_s = 1.225;          %atmospheric density at earth surface [kg/m^3] (page 381
 r0 = 6498.27;                   %entry radius [km]
 v0 = 11.06715;                  %entry velocity [km/s] (pg 377)
 gamma0 = deg2rad(-6.6198381);   %entry flight path angle
-
+theta0 = deg2rad(174.24384);    %entry longitude
+phi0 = deg2rad(23.51457);      %entry latitude
+h0 = 123.55077;                 %entry altitude [km]
+psi0 = deg2rad(18.0683);        %entry heading angle
 %%------------------------------Conversions------------------------------%%
 beta = beta/1000;   %[m^-1]
 r_e = r_e*1000;     %[m]
@@ -74,10 +77,19 @@ Qref = diag([1 0 0]);
 P = lyap(Aref',Qref);
 
 %%----------------------------System Conditions----------------------------%%
+
 x0 = [r0;v0;gamma0];            %initial conditions
 r_des = 10 * 1000; % 10 km above the surface
 
 
+tspan = linspace(0,550,1000);
+[T,X] = ode45(@(t,x) command(t,x),tspan,[r0;theta0;phi0;v0;gamma0;psi0]);
+
+figure
+plot(T,X(:,1)/1000-r_e/1000)
+xlabel('Time [s]')
+ylabel('Altitude [km]')
+%% 
 
 %%----------------------------Simulation----------------------------%%
 sim('EDLSim');
