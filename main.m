@@ -1,8 +1,8 @@
 
 clear; close all
-
-%tSim = 550;
-tSim = 100;
+Ts = 0.01;
+tSim = 550;
+% tSim = 100;
 %use neural network to figure out relationship between mach number and
 %Cl,Cd?
 % x0 = load('scaled.mat','x0');
@@ -65,25 +65,27 @@ K = lqr(A,B,Q,R);
 Aref =  A-B*K;
 Bref = [0;0;1];
 
-%%--------------------------Adaptive Parameters--------------------------%%
+%% --------------------------Adaptive Parameters--------------------------%%
 Gama = 1;
 Theta = [0 0 1];
 
-Gamax = 10*eye(3);
-Gamar = 10;
-Gamat = 1*eye(3);
-Qref = diag([1 0 0]);
+Gamax = .1*eye(3);
+Gamar = .1;
+Gamat = .1*eye(3);
+Qref = diag([.1 0 0]);
 
 P = lyap(Aref',Qref);
 
-%%----------------------------System Conditions----------------------------%%
+%% ----------------------------System Conditions----------------------------%%
 
 x0 = [r0;v0;gamma0];            %initial conditions
 r_des = 10 * 1000; % 10 km above the surface
+load("network.mat",'net')
 
 
 tspan = linspace(0,550,1000);
-[T,X] = ode45(@(t,x) command(t,x),tspan,[r0;theta0;phi0;v0;gamma0;psi0]);
+[T,X] = ode45(@(t,x) command(t,x,net),tspan,[r0;theta0;phi0;v0;gamma0;psi0]);
+% [T,X] = ode45(@(t,x) command3(t,x),tspan,[r0;v0;gamma0]);
 
 figure
 plot(T,X(:,1)/1000-r_e/1000)

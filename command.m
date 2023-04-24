@@ -1,8 +1,7 @@
-function xdot = command(t,x)
+function xdot = command(t,x,net)
 r = x(1); theta = x(2); phi = x(3); v = x(4); gamma = x(5); psi = x(6);
 xdot = zeros(6,1);
 
-load("network.mat",'net')
 sigma = net(t);
 sigma = deg2rad(sigma);
 
