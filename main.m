@@ -81,18 +81,21 @@ P = lyap(Aref',Qref);
 x0 = [r0;v0;gamma0];            %initial conditions
 r_des = 10 * 1000; % 10 km above the surface
 load("network.mat",'net')
-
+% 
 meanDist = 500;
 varDist = 50;
 
 e0 = 0;
 
-% tspan = linspace(0,550,1000);
-% [T,X] = ode45(@(t,x) command(t,x,net),tspan,[r0;theta0;phi0;v0;gamma0;psi0]);
-% % [T,X] = ode45(@(t,x) command3(t,x),tspan,[r0;v0;gamma0]);
-% 
+tspan = linspace(0,550,1000);
+[T,X] = ode45(@(t,x) command(t,x,net),tspan,[r0;theta0;phi0;v0;gamma0;psi0]);
+% [T,X] = ode45(@(t,x) command3(t,x),tspan,[r0;v0;gamma0]);
+%h = X(:,1)/1000-r_e/1000; %desired altitude trajectory
+h = X(:,1);
+h = timeseries(h,T);
+%save('altitude.mat',"h")
 % figure
-% plot(T,X(:,1)/1000-r_e/1000)
+% plot(h)
 % xlabel('Time [s]')
 % ylabel('Altitude [km]')
 
