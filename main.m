@@ -74,6 +74,8 @@ Gamar = 1;
 Gamat = 1*eye(3);
 Qref = diag([1 0 0]);
 
+sig = 1;
+
 P = lyap(Aref',Qref);
 
 %% ----------------------------System Conditions----------------------------%%
