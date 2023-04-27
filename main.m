@@ -74,7 +74,7 @@ Gamar = 1;
 Gamat = 1*eye(3);
 Qref = diag([1 0 0]);
 
-sig = 1;
+sig = 10 ;
 
 P = lyap(Aref',Qref);
 
@@ -84,8 +84,8 @@ x0 = [r0;v0;gamma0];            %initial conditions
 r_des = 10 * 1000; % 10 km above the surface
 load("network.mat",'net')
 % 
-meanDist = 500;
-varDist = 50;
+meanDist = 50000;
+varDist = 5000;
 
 e0 = 0;
 
@@ -96,12 +96,15 @@ tspan = linspace(0,550,1000);
 h = X(:,1);
 h = timeseries(h,T);
 %save('altitude.mat',"h")
+
 % figure
-% plot(h)
+% plot(T,X(:,1)/1000-r_e/1000)
 % xlabel('Time [s]')
 % ylabel('Altitude [km]')
-
+% grid on
 %% ----------------------------Simulation----------------------------%%
+tSim = T(end);
+
 sim('EDLSim');
 
 
