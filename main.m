@@ -1,7 +1,7 @@
 
 clear; close all
 Ts = 0.01;
-tSim = 550;
+%tSim = 550;
 % tSim = 100;
 %use neural network to figure out relationship between mach number and
 %Cl,Cd?
@@ -69,9 +69,9 @@ Bref = [0;0;1];
 Gama = 1;
 Theta = [0 0 1];
 
-Gamax = .0001*eye(3);
-Gamar = .0001;
-Gamat = .0001*eye(3);
+Gamax = 1*eye(3);
+Gamar = 1;
+Gamat = 1*eye(3);
 Qref = diag([1 0 0]);
 
 P = lyap(Aref',Qref);
@@ -82,13 +82,14 @@ x0 = [r0;v0;gamma0];            %initial conditions
 r_des = 10 * 1000; % 10 km above the surface
 load("network.mat",'net')
 % 
-meanDist = 500000;
+meanDist = 50000;
 varDist = 5000;
 
-e0 = 0;
+e0 = 350;
 
 tspan = linspace(0,550,1000);
 [T,X] = ode45(@(t,x) command(t,x,net),tspan,[r0;theta0;phi0;v0;gamma0;psi0]);
+tSim = T(end);
 % [T,X] = ode45(@(t,x) command3(t,x),tspan,[r0;v0;gamma0]);
 %h = X(:,1)/1000-r_e/1000; %desired altitude trajectory
 h = X(:,1);
@@ -126,7 +127,7 @@ ylabel('Altitude Error (m)')
 
 figure
 subplot(2,1,1)
-plot(u.time,kx.signals.values(:,2))
+plot(u.time,kx.signals.values(:,1))
 grid on
 title('kx')
 
